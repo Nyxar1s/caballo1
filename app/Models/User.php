@@ -67,11 +67,27 @@ class User extends Authenticatable
     }
 
     /**
-     * Get all audit logs related to this user (as the subject).
+     * Get the audit logs related to this user (as the subject).
      */
     public function subjectAuditLogs(): HasMany
     {
         return $this->hasMany(AuditLog::class, 'model_id')
             ->where('model_type', self::class);
+    }
+
+    /**
+     * Get the files uploaded by this user.
+     */
+    public function files(): HasMany
+    {
+        return $this->hasMany(File::class);
+    }
+
+    /**
+     * Get the files uploaded by this user (relation).
+     */
+    public function uploadedFiles(): HasMany
+    {
+        return $this->hasMany(File::class, 'uploaded_by', 'id');
     }
 }

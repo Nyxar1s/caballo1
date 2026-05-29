@@ -9,10 +9,15 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AuditLogController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\FileController;
 
 // Public auth routes
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Public file routes (no auth required)
+Route::get('/files/public', [FileController::class, 'public']);
+Route::get('/files/{file}/download', [FileController::class, 'download'])->name('files.download');
 
 // Protected routes (require Sanctum authentication)
 Route::middleware('auth:sanctum')->group(function () {
@@ -33,6 +38,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update']);
     Route::get('/users/{user}/profile', [ProfileController::class, 'show']);
     Route::patch('/users/{user}/profile', [ProfileController::class, 'updateUser']);
+
+    // File management routes
+    Route::apiResource('files', FileController::class);
+    Route::get('/files/statistics', [FileController::class, 'statistics']);
+    Route::get('/files/deleted/list', [FileController::class, 'deleted']);
+    Route::post('/files/{file}/restore', [FileController::class, 'restore']);
+    Route::delete('/files/{file}/permanent', [FileController::class, 'permanentlyDelete']);
 
     // Audit Log routes
     Route::get('/audit-logs', [AuditLogController::class, 'index']);
