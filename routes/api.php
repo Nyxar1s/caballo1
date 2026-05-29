@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RolePermissionController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AuditLogController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 
 // Public auth routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -24,7 +28,28 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/notifications/mark-as-read', [UserController::class, 'markNotificationAsRead']);
     Route::post('/notifications/mark-all-as-read', [UserController::class, 'markAllNotificationsAsRead']);
 
-    // Role and Permission Management Routes
+    // Profile routes
+    Route::get('/profile', [ProfileController::class, 'me']);
+    Route::patch('/profile', [ProfileController::class, 'update']);
+    Route::get('/users/{user}/profile', [ProfileController::class, 'show']);
+    Route::patch('/users/{user}/profile', [ProfileController::class, 'updateUser']);
+
+    // Audit Log routes
+    Route::get('/audit-logs', [AuditLogController::class, 'index']);
+    Route::get('/audit-logs/statistics', [AuditLogController::class, 'statistics']);
+    Route::get('/audit-logs/{auditLog}', [AuditLogController::class, 'show']);
+    Route::get('/audit-logs/model/{modelType}/{modelId}', [AuditLogController::class, 'forModel']);
+    Route::get('/users/{user}/audit-logs', [AuditLogController::class, 'userLogs']);
+
+    // Role management routes (ORM based)
+    Route::apiResource('roles', RoleController::class);
+    Route::post('/roles/{role}/permissions', [RoleController::class, 'assignPermission']);
+    Route::delete('/roles/{role}/permissions', [RoleController::class, 'removePermission']);
+
+    // Permission management routes (ORM based)
+    Route::apiResource('permissions', PermissionController::class);
+
+    // Legacy Role and Permission Management Routes
     Route::prefix('roles-permissions')->group(function () {
         // Roles
         Route::post('/roles', [RolePermissionController::class, 'createRole']);
