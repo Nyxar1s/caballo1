@@ -18,6 +18,12 @@ Route::middleware('auth:sanctum')->group(function () {
     // User CRUD routes
     Route::apiResource('users', UserController::class);
 
+    // Notification routes
+    Route::get('/notifications', [UserController::class, 'getNotifications']);
+    Route::get('/notifications/unread-count', [UserController::class, 'getUnreadNotificationsCount']);
+    Route::post('/notifications/mark-as-read', [UserController::class, 'markNotificationAsRead']);
+    Route::post('/notifications/mark-all-as-read', [UserController::class, 'markAllNotificationsAsRead']);
+
     // Role and Permission Management Routes
     Route::prefix('roles-permissions')->group(function () {
         // Roles
